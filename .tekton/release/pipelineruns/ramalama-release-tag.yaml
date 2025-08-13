@@ -1,0 +1,34 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  annotations:
+    build.appstudio.openshift.io/repo: https://github.com/containers/ramalama?rev={{revision}}
+    build.appstudio.redhat.com/commit_sha: "{{revision}}"
+    build.appstudio.redhat.com/git_tag: "{{git_tag}}"
+    build.appstudio.redhat.com/latest_tag: "true"
+    pipelinesascode.tekton.dev/on-event: "[push]"
+    pipelinesascode.tekton.dev/on-target-branch: "[refs/tags/v*]"
+    pipelinesascode.tekton.dev/cancel-in-progress: "false"
+    pipelinesascode.tekton.dev/max-keep-runs: "3"
+  labels:
+    appstudio.openshift.io/application: ramalama
+    pipelines.appstudio.openshift.io/type: release
+  name: ramalama-release-tag
+  namespace: ramalama-tenant
+spec:
+  params:
+  - name: skip-components
+    value: >-
+      e2e cuda-vllm cuda-vllm-llama-server cuda-vllm-whisper-server cuda-vllm-rag
+      asahi-llama-server asahi-whisper-server
+      cann-llama-server cann-whisper-server
+      cuda-whisper-server
+      intel-gpu-llama-server intel-gpu-whisper-server
+      musa-llama-server musa-whisper-server
+      ramalama-vllm ramalama-vllm-llama-server ramalama-vllm-whisper-server ramalama-vllm-rag
+      rocm-llama-server rocm-whisper-server
+  pipelineRef:
+    name: create-release-snapshot
+  timeouts:
+    pipeline: 6h
+    finally: 15m
