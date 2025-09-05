@@ -16,7 +16,11 @@ function setup() {
 # bats test_tags=distro-integration
 @test "ramalama bench" {
     skip_if_no_llama_bench
-    run_ramalama bench -t 2 smollm:135m
+    model=smollm:135m
+    if is_bigendian; then
+        model=hf://taronaeo/Granite-3.3-2B-Instruct-BE-GGUF:Q2_K
+    fi
+    run_ramalama bench -t 2 $model
     is "$output" ".*model.*size.*" "model and size in output"
 }
 

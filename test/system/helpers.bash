@@ -289,5 +289,9 @@ function skip_if_no_llama_bench() {
     fi
 }
 
+function is_bigendian() {
+    [ "$(uname -m)" == "s390x" ]
+}
+
 # END   miscellaneous tools
 ###############################################################################
